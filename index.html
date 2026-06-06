@@ -1273,18 +1273,39 @@ function confirmarNovo() {
 // ── VALIDAÇÃO ── //
 function validar() {
   const isCasado = v('estado-civil') === 'Casado(a)';
-  const esposo = isCasado ? v('nome-esposo').trim() : v('nome-esposo-unico').trim();
-  const esposa = isCasado ? v('nome-esposa').trim() : '';
-  const errEl  = document.getElementById('err-nome');
-  const inputRef = document.getElementById(isCasado ? 'nome-esposo' : 'nome-esposo-unico');
+  const errEl = document.getElementById('err-nome');
 
-  if (!esposo && !esposa) {
-    errEl.classList.add('show');
-    if (inputRef) { inputRef.classList.add('error'); inputRef.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-    return false;
+  if (isCasado) {
+    const esposo = v('nome-esposo').trim();
+    const esposa = v('nome-esposa').trim();
+    const inputEsposo = document.getElementById('nome-esposo');
+    const inputEsposa = document.getElementById('nome-esposa');
+    if (!esposo || !esposa) {
+      errEl.textContent = !esposo && !esposa
+        ? '⚠ Informe o nome dos dois membros do casal'
+        : !esposo ? '⚠ Informe o nome completo do esposo'
+        : '⚠ Informe o nome completo da esposa';
+      errEl.classList.add('show');
+      if (!esposo) { inputEsposo.classList.add('error'); inputEsposo.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      if (!esposa) inputEsposa.classList.add('error');
+      return false;
+    }
+    inputEsposo.classList.remove('error');
+    inputEsposa.classList.remove('error');
+  } else {
+    const nome = v('nome-esposo-unico').trim();
+    const inputRef = document.getElementById('nome-esposo-unico');
+    if (!nome) {
+      errEl.textContent = '⚠ Informe o nome completo';
+      errEl.classList.add('show');
+      inputRef.classList.add('error');
+      inputRef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    inputRef.classList.remove('error');
   }
+
   errEl.classList.remove('show');
-  if (inputRef) inputRef.classList.remove('error');
   return true;
 }
 
