@@ -1231,7 +1231,7 @@ function ajustarEstadoCivil(val) {
     wrapUnico.style.display = '';
     document.getElementById('nome-esposo').value = '';
     document.getElementById('nome-esposa').value = '';
-    labelUnico.textContent = 'Nome completo';
+    labelUnico.innerHTML = 'Nome completo <span class="req">*</span>';
     document.getElementById('label-filhos').textContent = 'Filho';
     document.getElementById('btn-add-filho').innerHTML = '<i class="ti ti-plus"></i> Adicionar filho';
   } else {
