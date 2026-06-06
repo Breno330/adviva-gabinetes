@@ -703,33 +703,71 @@
       <span class="card-number">3 / 5</span>
     </div>
 
-    <div class="field">
+    <!-- Batismo: solteiro = 1 campo | casado = 2 campos -->
+    <div class="field" id="wrap-batismo-unico">
       <label>É batizado(a)?</label>
       <select id="batizados" onchange="onSelectSN('batizados',this.value);autoSave()">
         <option value="">Selecionar…</option>
         <option value="Sim">Sim</option>
         <option value="Não">Não</option>
       </select>
-      <div class="alert azul-alert" id="alert-batismo">
-        <i class="ti ti-info-circle"></i>
-        <span>Informar sobre <strong>discipulado</strong> e conectar com irmão <strong>Divino</strong> ou <strong>Guilherme</strong></span>
+    </div>
+    <div class="row" id="wrap-batismo-casal" style="display:none">
+      <div class="field">
+        <label id="lbl-bat-esposo">Esposo — batizado?</label>
+        <select id="batizados" onchange="onSelectSN('batizados',this.value);autoSave()">
+          <option value="">Selecionar…</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+      <div class="field">
+        <label id="lbl-bat-esposa">Esposa — batizada?</label>
+        <select id="batizados-conjuge" onchange="autoSave()">
+          <option value="">Selecionar…</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
       </div>
     </div>
+    <div class="alert azul-alert" id="alert-batismo">
+      <i class="ti ti-info-circle"></i>
+      <span>Informar sobre <strong>discipulado</strong> e conectar com irmão <strong>Divino</strong> ou <strong>Guilherme</strong></span>
+    </div>
 
-    <div class="field">
+    <!-- Comunhão: solteiro = 1 campo | casado = 2 campos -->
+    <div class="field" id="wrap-comunhao-unico" style="margin-top:12px">
       <label>Está em comunhão?</label>
       <select id="comunhao" onchange="onSelectSN('comunhao',this.value);autoSave()">
         <option value="">Selecionar…</option>
         <option value="Sim">Sim</option>
         <option value="Não">Não</option>
       </select>
-      <div class="alert dourado-alert" id="alert-comunhao">
-        <i class="ti ti-alert-triangle"></i>
-        <span>Verificar como <strong>ajudar a reestabelecer a comunhão</strong></span>
+    </div>
+    <div class="row" id="wrap-comunhao-casal" style="display:none;margin-top:12px">
+      <div class="field">
+        <label>Esposo — em comunhão?</label>
+        <select id="comunhao" onchange="onSelectSN('comunhao',this.value);autoSave()">
+          <option value="">Selecionar…</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Esposa — em comunhão?</label>
+        <select id="comunhao-conjuge" onchange="autoSave()">
+          <option value="">Selecionar…</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
       </div>
     </div>
+    <div class="alert dourado-alert" id="alert-comunhao">
+      <i class="ti ti-alert-triangle"></i>
+      <span>Verificar como <strong>ajudar a reestabelecer a comunhão</strong></span>
+    </div>
 
-    <div class="field">
+    <div class="field" style="margin-top:12px">
       <label>Participava de algum ministério na Igreja Anterior?</label>
       <input type="text" id="ministerio" placeholder="Ex.: Louvor, EBD, Diaconia…"
         oninput="autoSave();marcarPreenchido(this)">
@@ -852,8 +890,10 @@
       <div class="preview-section">
         <div class="preview-section-title"><i class="ti ti-book-2"></i> Histórico Espiritual</div>
         <div class="preview-grid">
-          <div class="preview-field"><div class="pf-label">Batizados</div><div class="pf-value" id="pv-batizados"></div></div>
-          <div class="preview-field"><div class="pf-label">Em comunhão</div><div class="pf-value" id="pv-comunhao"></div></div>
+          <div class="preview-field"><div class="pf-label" id="pv-lbl-batizados">Batizado(a)</div><div class="pf-value" id="pv-batizados"></div></div>
+          <div class="preview-field" id="pv-wrap-bat-conjuge" style="display:none"><div class="pf-label">Cônjuge — batizado(a)</div><div class="pf-value" id="pv-batizados-conjuge"></div></div>
+          <div class="preview-field"><div class="pf-label" id="pv-lbl-comunhao">Em comunhão</div><div class="pf-value" id="pv-comunhao"></div></div>
+          <div class="preview-field" id="pv-wrap-com-conjuge" style="display:none"><div class="pf-label">Cônjuge — em comunhão</div><div class="pf-value" id="pv-comunhao-conjuge"></div></div>
           <div class="preview-field"><div class="pf-label">Ministério anterior</div><div class="pf-value" id="pv-ministerio"></div></div>
           <div class="preview-field"><div class="pf-label">Título eclesiástico</div><div class="pf-value" id="pv-titulo"></div></div>
         </div>
@@ -1079,6 +1119,14 @@ function ajustarEstadoCivil(val) {
   // Atualiza título do card
   const cardTitle    = document.querySelector('[data-section="2"] .card-title');
   const cardSubtitle = document.querySelector('[data-section="2"] .card-subtitle');
+  // Alternar campos de batismo/comunhão casal vs individual
+  const wrapBatUnico   = document.getElementById('wrap-batismo-unico');
+  const wrapBatCasal   = document.getElementById('wrap-batismo-casal');
+  const wrapComUnico   = document.getElementById('wrap-comunhao-unico');
+  const wrapComCasal   = document.getElementById('wrap-comunhao-casal');
+  const lblBatEsposo   = document.getElementById('lbl-bat-esposo');
+  const lblBatEsposa   = document.getElementById('lbl-bat-esposa');
+
   if (val === 'Casado(a)') {
     cardTitle.textContent    = 'Família';
     cardSubtitle.textContent = 'Identificação dos membros';
@@ -1087,9 +1135,19 @@ function ajustarEstadoCivil(val) {
     document.getElementById('nome-esposo-unico').value = '';
     document.getElementById('label-filhos').textContent = 'Filhos';
     document.getElementById('btn-add-filho').innerHTML = '<i class="ti ti-plus"></i> Adicionar filho';
+    // Mostrar campos duplos
+    if (wrapBatUnico) wrapBatUnico.style.display = 'none';
+    if (wrapBatCasal) wrapBatCasal.style.display = '';
+    if (wrapComUnico) wrapComUnico.style.display = 'none';
+    if (wrapComCasal) wrapComCasal.style.display = '';
   } else if (val) {
     cardTitle.textContent    = 'Membro';
     cardSubtitle.textContent = 'Identificação do membro';
+    // Mostrar campos simples
+    if (wrapBatUnico) wrapBatUnico.style.display = '';
+    if (wrapBatCasal) wrapBatCasal.style.display = 'none';
+    if (wrapComUnico) wrapComUnico.style.display = '';
+    if (wrapComCasal) wrapComCasal.style.display = 'none';
     wrapCasal.style.display = 'none';
     wrapUnico.style.display = '';
     document.getElementById('nome-esposo').value = '';
@@ -1272,7 +1330,9 @@ function collectData() {
     whatsapp: v('whatsapp').trim(),
     igrejaAnterior: v('igreja-anterior').trim(),
     batizados: v('batizados'),
+    batizadosConjuge: v('batizados-conjuge'),
     comunhao: v('comunhao'),
+    comunhaoConjuge: v('comunhao-conjuge'),
     ministerio: v('ministerio').trim(),
     titulo: v('titulo').trim(),
     acaoWhatsapp: v('acao-whatsapp'),
@@ -1334,8 +1394,20 @@ function gerarFicha() {
     pvFotoWrap.style.display = 'none';
   }
 
+  const isCasadoPreview = d.estadoCivil === 'Casado(a)';
+  document.getElementById('pv-lbl-batizados').textContent = isCasadoPreview ? 'Esposo — batizado' : 'Batizado(a)';
+  document.getElementById('pv-lbl-comunhao').textContent = isCasadoPreview ? 'Esposo — em comunhão' : 'Em comunhão';
   document.getElementById('pv-batizados').innerHTML = badge(d.batizados);
   document.getElementById('pv-comunhao').innerHTML = badge(d.comunhao);
+  const pvBatConj = document.getElementById('pv-wrap-bat-conjuge');
+  const pvComConj = document.getElementById('pv-wrap-com-conjuge');
+  if (isCasadoPreview) {
+    pvBatConj.style.display = ''; document.getElementById('pv-batizados-conjuge').innerHTML = badge(d.batizadosConjuge);
+    pvComConj.style.display = ''; document.getElementById('pv-comunhao-conjuge').innerHTML = badge(d.comunhaoConjuge);
+  } else {
+    pvBatConj.style.display = 'none';
+    pvComConj.style.display = 'none';
+  }
   document.getElementById('pv-ministerio').innerHTML = pval(d.ministerio);
   document.getElementById('pv-titulo').innerHTML = pval(d.titulo);
 
