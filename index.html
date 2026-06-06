@@ -714,19 +714,19 @@
       <!-- Casados: dois campos empilhados -->
       <div id="wrap-casal">
         <div class="field">
-          <label>Nome completo</label>
+          <label>Nome completo <span class="req">*</span></label>
           <input type="text" id="nome-esposo" placeholder="Nome completo"
             oninput="autoSave();marcarPreenchido(this);atualizarProgresso()">
         </div>
         <div class="field">
-          <label>Nome do cônjuge</label>
+          <label>Nome do cônjuge <span class="req">*</span></label>
           <input type="text" id="nome-esposa" placeholder="Nome completo"
             oninput="autoSave();marcarPreenchido(this)">
         </div>
       </div>
       <!-- Solteiro/Viúvo/Divorciado: campo único -->
       <div class="field" id="wrap-unico" style="display:none">
-        <label id="label-esposo">Nome completo</label>
+        <label id="label-esposo">Nome completo <span class="req">*</span></label>
         <input type="text" id="nome-esposo-unico" placeholder="Nome completo"
           oninput="autoSave();marcarPreenchido(this);atualizarProgresso()">
       </div>
