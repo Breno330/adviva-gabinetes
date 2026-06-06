@@ -45,43 +45,96 @@
 
   /* ── HEADER ── */
   .app-header {
-    background: var(--azul);
-    padding: 24px 20px 28px;
+    background: #fff;
+    padding: 28px 20px 0;
     text-align: center;
+    border-bottom: none;
   }
   .app-header .logo-area {
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
-  .app-header .logo-img { height: 120px; width: auto; }
-  .app-header h1 { display: none; }
-  .app-header .subtitle { color: rgba(255,255,255,0.75); font-size: 17px; font-weight: 500; letter-spacing: 0.3px; margin-bottom: 2px; }
-  .app-header .badge-title {
-    display: inline-block; background: var(--dourado); color: #fff;
-    font-size: 15px; font-weight: 700; letter-spacing: 1px;
-    text-transform: uppercase; padding: 10px 24px;
-    border-radius: 20px; margin-top: 12px;
+  .app-header .logo-img { height: 80px; width: auto; }
+  .app-header h1 {
+    display: block;
+    color: var(--azul);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
   }
+  .app-header .subtitle {
+    color: var(--cinza-500);
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 24px;
+  }
+  .app-header .badge-title { display: none; }
 
-  /* ── PROGRESSO ── */
-  .progress-wrap {
-    margin: 16px 16px 0;
-    opacity: 0; transition: opacity 0.4s;
+  /* ── STEPPER ── */
+  .stepper-wrap {
+    background: var(--azul);
+    padding: 20px 12px 16px;
+    position: relative;
   }
-  .progress-wrap.show { opacity: 1; }
-  .progress-steps {
-    display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;
+  .stepper-wave {
+    position: absolute; bottom: -1px; left: 0; right: 0;
+    line-height: 0;
   }
-  .progress-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: rgba(255,255,255,0.3); transition: all 0.3s;
+  .stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    max-width: 520px;
+    margin: 0 auto;
+    position: relative;
   }
-  .progress-dot.done { background: var(--dourado); transform: scale(1.2); }
-  .progress-dot.active { background: #fff; }
-  .progress-label {
-    color: rgba(255,255,255,0.65); font-size: 11px;
-    text-align: center; letter-spacing: 0.3px;
+  .stepper-item {
+    display: flex; flex-direction: column;
+    align-items: center; flex: 1; position: relative;
   }
+  .stepper-item::before {
+    content: ''; position: absolute;
+    top: 22px; right: 50%; left: -50%;
+    height: 2px; background: rgba(255,255,255,0.25);
+    z-index: 0;
+  }
+  .stepper-item:first-child::before { display: none; }
+  .stepper-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    transition: all 0.3s;
+  }
+  .stepper-icon i { color: rgba(255,255,255,0.6); font-size: 18px; }
+  .stepper-item.active .stepper-icon {
+    background: var(--dourado);
+    border-color: var(--dourado);
+    box-shadow: 0 0 0 4px rgba(192,123,42,0.3);
+  }
+  .stepper-item.active .stepper-icon i { color: #fff; }
+  .stepper-item.done .stepper-icon {
+    background: rgba(255,255,255,0.9);
+    border-color: #fff;
+  }
+  .stepper-item.done .stepper-icon i { color: var(--azul); }
+  .stepper-item.done::before { background: rgba(255,255,255,0.6); }
+  .stepper-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 10px; font-weight: 600;
+    margin-top: 6px; text-align: center;
+    letter-spacing: 0.2px; line-height: 1.3;
+    max-width: 64px;
+  }
+  .stepper-item.active .stepper-label { color: #fff; font-weight: 700; }
+  .stepper-item.done .stepper-label { color: rgba(255,255,255,0.8); }
+
+  /* ── PROGRESSO (mantido para compatibilidade JS) ── */
+  .progress-wrap { display: none; }
+  .progress-dot, .progress-label { display: none; }
 
   /* ── LAYOUT ── */
   .container { max-width: 640px; margin: 0 auto; padding: 20px 16px 40px; }
@@ -526,17 +579,43 @@
   <div class="logo-area">
     <img src="logo.png" alt="AD VIVA" class="logo-img">
   </div>
-  <div class="subtitle">Assembleia de Deus</div>
-  <div class="badge-title">Bate-Papo Pastoral</div>
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-steps">
-      <div class="progress-dot" id="dot-1" title="Gabinete"></div>
-      <div class="progress-dot" id="dot-2" title="Família"></div>
-      <div class="progress-dot" id="dot-3" title="Histórico"></div>
-      <div class="progress-dot" id="dot-4" title="Ações"></div>
-      <div class="progress-dot" id="dot-5" title="Observações"></div>
-    </div>
+  <h1>Bate-Papo Pastoral</h1>
+  <div class="subtitle">Cuidado pastoral que gera transformação</div>
+  <div class="progress-wrap" id="progressWrap" style="display:none">
     <div class="progress-label" id="progressLabel"></div>
+  </div>
+</div>
+
+<!-- ── STEPPER ── -->
+<div class="stepper-wrap">
+  <div class="stepper">
+    <div class="stepper-item active" id="step-1">
+      <div class="stepper-icon"><i class="ti ti-calendar-event"></i></div>
+      <div class="stepper-label">Dados do Gabinete</div>
+    </div>
+    <div class="stepper-item" id="step-2">
+      <div class="stepper-icon"><i class="ti ti-users"></i></div>
+      <div class="stepper-label">Família</div>
+    </div>
+    <div class="stepper-item" id="step-3">
+      <div class="stepper-icon"><i class="ti ti-cross"></i></div>
+      <div class="stepper-label">Conversão</div>
+    </div>
+    <div class="stepper-item" id="step-4">
+      <div class="stepper-icon"><i class="ti ti-checklist"></i></div>
+      <div class="stepper-label">Acompanha­mento</div>
+    </div>
+    <div class="stepper-item" id="step-5">
+      <div class="stepper-icon"><i class="ti ti-check"></i></div>
+      <div class="stepper-label">Finalização</div>
+    </div>
+  </div>
+  <!-- Onda decorativa -->
+  <div class="stepper-wave">
+    <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:40px;display:block">
+      <path d="M0,20 C360,40 1080,0 1440,20 L1440,40 L0,40 Z" fill="#F0F4FA"/>
+      <path d="M0,30 C360,10 1080,50 1440,30" fill="none" stroke="#C07B2A" stroke-width="2" opacity="0.6"/>
+    </svg>
   </div>
 </div>
 
@@ -1039,19 +1118,17 @@ function atualizarProgresso() {
 
   const total = checks.filter(Boolean).length;
 
-  // Mostrar barra só após primeira interação
-  const wrap = document.getElementById('progressWrap');
-  if (total > 0) wrap.classList.add('show'); else wrap.classList.remove('show');
-
-  // Atualizar dots
+  // Atualizar stepper
   checks.forEach((done, i) => {
-    const dot = document.getElementById(`dot-${i+1}`);
-    if (!dot) return;
-    dot.className = 'progress-dot' + (done ? ' done' : (i === total ? ' active' : ''));
+    const step = document.getElementById(`step-${i+1}`);
+    if (!step) return;
+    step.className = 'stepper-item' + (done ? ' done' : (i === total ? ' active' : ''));
   });
-
-  const labels = ['','Dados do gabinete OK','Família registrada','Histórico espiritual OK','Ações registradas','Tudo pronto!'];
-  document.getElementById('progressLabel').textContent = total < 5 ? `${total} de 5 etapas concluídas` : '✓ Formulário completo';
+  // Garantir que pelo menos o step atual esteja active
+  if (total < 5) {
+    const cur = document.getElementById(`step-${total+1}`);
+    if (cur) cur.className = 'stepper-item active';
+  }
 
   // Microanimação nos cards concluídos
   checks.forEach((done, i) => {
