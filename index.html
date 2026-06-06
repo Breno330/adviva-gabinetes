@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AD VIVA — Bate-Papo Pastoral</title>
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --azul: #1B4F8A;
+    --azul-light: #2563B0;
+    --azul-bg: #EBF2FB;
+    --dourado: #C07B2A;
+    --dourado-bg: #FDF3E7;
+    --oliva-bg: #F4F7EC;
+    --branco: #FFFFFF;
+    --cinza-100: #F8F9FA;
+    --cinza-200: #E9ECEF;
+    --cinza-300: #DEE2E6;
+    --cinza-500: #ADB5BD;
+    --cinza-700: #495057;
+    --cinza-900: #212529;
+    --verde: #2D9B4A;
+    --verde-bg: #EAF7EE;
+    --vermelho: #C0392B;
+    --vermelho-bg: #FDEDEB;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 8px rgba(27,79,138,0.10);
+    --shadow-md: 0 4px 16px rgba(27,79,138,0.14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #F0F4FA;
+    color: var(--cinza-900);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--azul);
+    padding: 36px 24px 32px;
+    text-align: center;
+  }
+  .app-header .logo-area {
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .app-header .logo-img { height: 100px; width: auto; }
+  .app-header h1 { display: none; }
+  .app-header .subtitle { color: rgba(255,255,255,0.75); font-size: 15px; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .app-header .badge-title {
+    display: inline-block; background: var(--dourado); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; padding: 8px 20px;
+    border-radius: 20px; margin-top: 12px;
+  }
+
+  /* ── PROGRESSO ── */
+  .progress-wrap {
+    margin: 16px 16px 0;
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .progress-wrap.show { opacity: 1; }
+  .progress-steps {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;
+  }
+  .progress-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.3); transition: all 0.3s;
+  }
+  .progress-dot.done { background: var(--dourado); transform: scale(1.2); }
+  .progress-dot.active { background: #fff; }
+  .progress-label {
+    color: rgba(255,255,255,0.65); font-size: 11px;
+    text-align: center; letter-spacing: 0.3px;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 640px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--branco); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px;
+    border: 1px solid var(--cinza-200);
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 2px solid var(--azul-bg);
+  }
+  .card-header .icon-wrap {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .icon-wrap.azul { background: var(--azul-bg); }
+  .icon-wrap.azul i { color: var(--azul); font-size: 18px; }
+  .icon-wrap.dourado { background: var(--dourado-bg); }
+  .icon-wrap.dourado i { color: var(--dourado); font-size: 18px; }
+  .icon-wrap.oliva { background: var(--azul-bg); }
+  .icon-wrap.oliva i { color: var(--azul); font-size: 18px; }
+  .card-number { display: none; }
+
+  /* ── CARD CONCLUÍDO ── */
+  .card.concluido {
+    border-color: #86C99A;
+    box-shadow: 0 2px 8px rgba(45,155,74,0.12);
+  }
+  .card.concluido .card-header {
+    border-bottom-color: var(--verde-bg);
+  }
+  .card-check {
+    margin-left: auto; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--verde); display: flex; align-items: center;
+    justify-content: center; opacity: 0; transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .card-check i { color: #fff; font-size: 13px; }
+  .card.concluido .card-check { opacity: 1; transform: scale(1); }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--azul); }
+  .card-subtitle { font-size: 12px; color: var(--cinza-500); margin-top: 1px; }
+
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--cinza-700); margin-bottom: 6px;
+  }
+  label span.req { color: var(--dourado); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="tel"],
+  input[type="number"],
+  textarea, select {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--cinza-300); border-radius: var(--radius-sm);
+    font-size: 15px; color: var(--cinza-900); background: var(--cinza-100);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--azul); background: #fff;
+    box-shadow: 0 0 0 3px rgba(27,79,138,0.10);
+  }
+  /* Campo preenchido ✓ */
+  input[type="text"].filled,
+  input[type="tel"].filled,
+  input[type="number"].filled { border-color: #86C99A; background: #fff; }
+
+  textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+
+  /* Erro inline */
+  .field-error {
+    font-size: 12px; color: var(--vermelho); font-weight: 600;
+    margin-top: 5px; display: none; align-items: center; gap: 4px;
+  }
+  .field-error.show { display: flex; }
+  input.error, textarea.error { border-color: var(--vermelho) !important; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── PILL BUTTONS ── */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .pill-btn {
+    padding: 8px 18px; border-radius: 30px;
+    border: 1.5px solid var(--cinza-300); background: var(--cinza-100);
+    color: var(--cinza-700); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.18s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pill-btn:active { transform: scale(0.96); }
+  .pill-btn.selected { background: var(--azul); border-color: var(--azul); color: #fff; box-shadow: 0 2px 8px rgba(27,79,138,0.25); }
+  .pill-btn.selected-sim { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .pill-btn.selected-nao { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+  .pill-btn.selected-pendente { background: var(--dourado); border-color: var(--dourado); color: #fff; }
+
+  /* ── ALERTS ── */
+  .alert {
+    display: none; padding: 12px 14px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500; line-height: 1.5;
+    margin-top: 10px; gap: 8px; align-items: flex-start;
+    opacity: 0; transform: translateY(-4px);
+    transition: opacity 0.25s, transform 0.25s;
+  }
+  .alert.show { display: flex; opacity: 1; transform: translateY(0); }
+  .alert i { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert.azul-alert { background: var(--azul-bg); border: 1.5px solid rgba(27,79,138,0.25); color: var(--azul); }
+  .alert.dourado-alert { background: var(--dourado-bg); border: 1.5px solid rgba(192,123,42,0.30); color: #7A4E10; }
+
+  /* ── FILHOS ── */
+  .filho-row {
+    display: grid; grid-template-columns: 1fr 90px auto;
+    gap: 8px; align-items: start; margin-bottom: 10px;
+  }
+  .btn-remove {
+    background: var(--vermelho-bg); border: none; color: var(--vermelho);
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .btn-add {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: 1.5px dashed var(--azul); color: var(--azul);
+    padding: 9px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    width: 100%; justify-content: center; margin-top: 4px;
+    transition: background 0.2s;
+  }
+  .btn-add:hover { background: var(--azul-bg); }
+
+  /* ── AÇÕES ── */
+  .acao-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid var(--cinza-200); gap: 12px;
+  }
+  .acao-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .acao-label { font-size: 14px; font-weight: 500; color: var(--cinza-700); flex: 1; line-height: 1.4; }
+  .acao-label small { display: block; font-size: 12px; color: var(--cinza-500); font-weight: 400; }
+  .acao-pills { display: flex; gap: 6px; flex-shrink: 0; }
+  .acao-pills .pill-btn { padding: 6px 12px; font-size: 12px; }
+
+  /* ── CARD BOAS-VINDAS ── */
+  .card-welcome {
+    background: linear-gradient(135deg, var(--azul) 0%, #2563B0 100%);
+    border: none; border-radius: var(--radius);
+    padding: 22px 20px; margin-bottom: 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .welcome-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .welcome-icon i { color: var(--dourado); font-size: 22px; }
+  .welcome-text h3 { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .welcome-text p { color: rgba(255,255,255,0.78); font-size: 13px; line-height: 1.55; }
+
+  /* ── BOTÕES PRINCIPAIS ── */
+  .btn-gerar {
+    width: 100%; padding: 16px; background: var(--dourado); color: #fff;
+    border: none; border-radius: var(--radius); font-size: 16px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 10px; box-shadow: 0 4px 16px rgba(192,123,42,0.35);
+    transition: background 0.2s, transform 0.15s; margin-top: 8px;
+  }
+  .btn-gerar:active { transform: scale(0.98); background: #A86B20; }
+  .btn-gerar:disabled { background: var(--cinza-500); box-shadow: none; cursor: not-allowed; transform: none; }
+  .btn-gerar i { font-size: 20px; }
+
+  .btn-novo {
+    width: 100%; padding: 12px; background: transparent; color: var(--cinza-700);
+    border: 1.5px solid var(--cinza-300); border-radius: var(--radius);
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 8px; transition: all 0.2s; margin-top: 10px;
+  }
+  .btn-novo:hover { border-color: var(--azul); color: var(--azul); background: var(--azul-bg); }
+  .btn-novo:active { background: var(--azul-bg); }
+
+  /* ── PREVIEW ── */
+  #preview-area { display: none; }
+  #preview-area.show { display: block; }
+  .preview-actions { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .btn-download {
+    width: 100%; padding: 18px 20px; background: var(--dourado); color: #fff;
+    border: none; border-radius: var(--radius); font-size: 17px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 10px; box-shadow: 0 6px 20px rgba(192,123,42,0.40);
+    transition: background 0.2s, transform 0.1s;
+    min-height: 58px; letter-spacing: 0.3px;
+  }
+  .btn-download:active { background: #A86B20; transform: scale(0.98); }
+  .btn-download:disabled { background: var(--cinza-500); box-shadow: none; cursor: not-allowed; transform: none; }
+
+  /* ── PREVIEW DOC ── */
+  .preview-doc {
+    background: #fff; border-radius: var(--radius);
+    box-shadow: var(--shadow-md); overflow: hidden; border: 1px solid var(--cinza-200);
+  }
+  .preview-header { background: var(--azul); color: #fff; padding: 28px 24px 24px; text-align: center; }
+  .preview-header .logo-wrap { margin: 0 auto 12px; }
+  .preview-header .logo-wrap img { height: 60px; width: auto; }
+  .preview-header h1 { display: none; }
+  .preview-header .church-sub { font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+  .preview-header .ficha-title {
+    background: var(--dourado); display: inline-block; padding: 6px 18px;
+    border-radius: 20px; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .preview-header .familia-nome { font-size: 22px; font-weight: 800; margin-top: 10px; }
+  .preview-body { padding: 0 0 24px; }
+  .preview-section { padding: 20px 24px 0; }
+  .preview-section-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--azul);
+    margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--azul-bg);
+  }
+  .preview-section-title i { font-size: 16px; }
+  .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .preview-field { margin-bottom: 10px; }
+  .preview-field .pf-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--cinza-500); margin-bottom: 3px;
+  }
+  .preview-field .pf-value { font-size: 14px; font-weight: 500; color: var(--cinza-900); line-height: 1.5; }
+  .preview-field .pf-value.empty { color: var(--cinza-500); font-style: italic; font-weight: 400; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  }
+  .badge.verde { background: var(--verde-bg); color: var(--verde); }
+  .badge.vermelho { background: var(--vermelho-bg); color: var(--vermelho); }
+  .badge.pendente { background: var(--dourado-bg); color: var(--dourado); }
+  .badge.neutro { background: var(--cinza-200); color: var(--cinza-700); }
+  .alert-preview {
+    padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    display: flex; gap: 8px; align-items: flex-start; margin-top: 8px;
+  }
+  .alert-preview.azul { background: var(--azul-bg); color: var(--azul); border-left: 3px solid var(--azul); }
+  .alert-preview.dourado { background: var(--dourado-bg); color: #7A4E10; border-left: 3px solid var(--dourado); }
+  .acao-preview-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid var(--cinza-200); gap: 12px;
+  }
+  .acao-preview-row:last-child { border-bottom: none; }
+  .acao-preview-label { font-size: 13px; color: var(--cinza-700); font-weight: 500; flex: 1; }
+  .filho-preview-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--azul-bg); color: var(--azul);
+    border-radius: 20px; padding: 5px 12px; font-size: 13px;
+    font-weight: 600; margin: 3px 4px 3px 0;
+  }
+  .preview-footer {
+    background: var(--cinza-100); border-top: 1px solid var(--cinza-200);
+    padding: 16px 24px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+  .preview-footer .footer-brand { font-size: 13px; font-weight: 700; color: var(--azul); }
+  .preview-footer .footer-date { font-size: 12px; color: var(--cinza-500); }
+  .obs-preview {
+    background: var(--cinza-100); border-radius: 8px;
+    padding: 12px 14px; font-size: 14px; color: var(--cinza-700);
+    line-height: 1.6; white-space: pre-wrap;
+  }
+  .pv-foto {
+    width: 100%; max-height: 200px; object-fit: cover;
+    border-radius: var(--radius-sm); border: 2px solid var(--cinza-200);
+    display: block; margin-top: 8px;
+  }
+
+  /* ── LOADING ── */
+  .loading-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(27,79,138,0.5); z-index: 1000;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+  .loading-overlay .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-overlay p { color: #fff; font-size: 15px; font-weight: 600; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── FOTO ── */
+  .foto-upload-area {
+    border: 2px dashed var(--cinza-300); border-radius: var(--radius-sm);
+    padding: 20px; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--cinza-100); position: relative;
+  }
+  .foto-upload-area:hover { border-color: var(--azul); background: var(--azul-bg); }
+  .foto-upload-area input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    width: 100%; height: 100%;
+  }
+  .foto-upload-area .upload-icon { color: var(--cinza-500); font-size: 32px; margin-bottom: 6px; }
+  .foto-upload-area p { font-size: 13px; color: var(--cinza-500); font-weight: 500; }
+  .foto-upload-area small { font-size: 11px; color: var(--cinza-500); }
+  .foto-preview-wrap { position: relative; display: inline-block; width: 100%; }
+  .foto-preview-wrap img {
+    width: 100%; max-height: 220px; object-fit: cover;
+    border-radius: var(--radius-sm); border: 2px solid var(--cinza-200); display: block;
+  }
+  .foto-remove-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,0.55); color: #fff;
+    border: none; border-radius: 50%;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+  }
+
+
+  /* ── WHATSAPP ── */
+  .whatsapp-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: end; }
+  .wa-prefix {
+    display: flex; align-items: center; gap: 6px;
+    padding: 11px 12px; background: var(--oliva-bg);
+    border: 1.5px solid var(--cinza-300); border-radius: var(--radius-sm);
+    color: #7A934A; font-weight: 700; font-size: 14px; white-space: nowrap;
+  }
+  .wa-prefix i { font-size: 18px; }
+
+  /* ── MODAL CONFIRMAÇÃO ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 1100;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: var(--radius);
+    padding: 28px 24px; max-width: 340px; width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2); text-align: center;
+  }
+  .modal-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--vermelho-bg); color: var(--vermelho);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin: 0 auto 14px;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--cinza-900); margin-bottom: 8px; }
+  .modal-desc { font-size: 14px; color: var(--cinza-700); line-height: 1.5; margin-bottom: 22px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-btn {
+    flex: 1; padding: 12px; border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700; cursor: pointer; border: none;
+    transition: background 0.2s;
+  }
+  .modal-btn.cancel { background: var(--cinza-200); color: var(--cinza-700); }
+  .modal-btn.cancel:hover { background: var(--cinza-300); }
+  .modal-btn.confirm { background: var(--vermelho); color: #fff; }
+  .modal-btn.confirm:hover { background: #a93226; }
+
+  /* ── AUTO-SAVE BADGE ── */
+  .autosave-badge {
+    position: fixed; top: 12px; right: 12px; z-index: 500;
+    background: var(--verde); color: #fff;
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+    opacity: 0; transition: opacity 0.4s;
+    pointer-events: none;
+  }
+  .autosave-badge.show { opacity: 1; }
+
+  /* ── PRINT ── */
+  @media print {
+    @page { margin: 10mm; size: A4; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    /* Ocultar tudo exceto o documento */
+    body > * { display: none !important; }
+    #preview-area { display: block !important; }
+    .preview-actions { display: none !important; }
+    .container { padding: 0 !important; max-width: 100% !important; }
+    #preview-doc { box-shadow: none !important; border: none !important; border-radius: 0 !important; }
+
+    /* Cabeçalho */
+    .preview-header {
+      background: #1B4F8A !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      padding: 16px !important;
+    }
+    .preview-header .church-sub,
+    .preview-header .familia-nome { color: #ffffff !important; }
+    .preview-header .ficha-title {
+      background: #C07B2A !important;
+      color: #fff !important;
+      -webkit-print-color-adjust: exact !important;
+    }
+
+    /* Seções */
+    .preview-section-title {
+      color: #1B4F8A !important;
+      border-bottom: 2px solid #1B4F8A !important;
+      font-size: 10px !important;
+    }
+    .pf-label { font-size: 9px !important; color: #888 !important; }
+    .pf-value { font-size: 12px !important; }
+
+    /* Badges */
+    .badge.verde { background: #d4edda !important; color: #155724 !important; border: 1px solid #155724 !important; }
+    .badge.vermelho { background: #f8d7da !important; color: #721c24 !important; border: 1px solid #721c24 !important; }
+    .badge.pendente { background: #fff3cd !important; color: #856404 !important; border: 1px solid #856404 !important; }
+    .badge.neutro { background: #e9ecef !important; color: #495057 !important; }
+
+    /* Alertas */
+    .alert-preview.azul { background: #cce5ff !important; color: #004085 !important; border-left: 3px solid #004085 !important; }
+    .alert-preview.dourado { background: #fff3cd !important; color: #856404 !important; border-left: 3px solid #C07B2A !important; }
+
+    /* Rodapé */
+    .preview-footer { background: #f8f9fa !important; border-top: 1px solid #dee2e6 !important; }
+    .filho-preview-tag { background: #e8f0fe !important; color: #1B4F8A !important; border: 1px solid #1B4F8A !important; }
+    .acao-preview-row { border-bottom: 1px solid #dee2e6 !important; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .row { grid-template-columns: 1fr; }
+    .preview-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="app-header">
+  <div class="logo-area">
+    <img src="logo.png" alt="AD VIVA" class="logo-img">
+  </div>
+  <div class="subtitle">Assembleia de Deus</div>
+  <div class="badge-title">Bate-Papo Pastoral</div>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-steps">
+      <div class="progress-dot" id="dot-1" title="Gabinete"></div>
+      <div class="progress-dot" id="dot-2" title="Família"></div>
+      <div class="progress-dot" id="dot-3" title="Histórico"></div>
+      <div class="progress-dot" id="dot-4" title="Ações"></div>
+      <div class="progress-dot" id="dot-5" title="Observações"></div>
+    </div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+</div>
+
+<!-- ── LOADING ── -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingMsg">Gerando PDF…</p>
+</div>
+
+<!-- ── MODAL CONFIRMAÇÃO ── -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal-box">
+    <div class="modal-icon"><i class="ti ti-refresh-alert"></i></div>
+    <div class="modal-title">Iniciar novo gabinete?</div>
+    <div class="modal-desc">Todos os dados preenchidos serão apagados. Esta ação não pode ser desfeita.</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="modal-btn confirm" onclick="confirmarNovo()">Sim, limpar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── AUTO-SAVE BADGE ── -->
+<div class="autosave-badge" id="autosaveBadge">
+  <i class="ti ti-device-floppy"></i> Salvo automaticamente
+</div>
+
+<!-- ── FORMULÁRIO ── -->
+<div id="form-area">
+<div class="container">
+
+  <!-- BOAS-VINDAS -->
+  <div class="card-welcome">
+    <div class="welcome-icon"><i class="ti ti-heart-handshake"></i></div>
+    <div class="welcome-text">
+      <h3>Bem-vindo ao Bate-Papo Pastoral</h3>
+      <p>Registre com cuidado as informações desta família. Cada dado aqui é um passo no cuidado pastoral e na integração à AD VIVA.</p>
+    </div>
+  </div>
+
+  <!-- CARD 1: GABINETE -->
+  <div class="card" data-section="1">
+    <div class="card-header">
+      <div class="icon-wrap azul"><i class="ti ti-calendar-event"></i></div>
+      <div>
+        <div class="card-title">Dados do Gabinete</div>
+        <div class="card-subtitle">Data e pastores realizadores</div>
+      </div>
+      <div class="card-check"><i class="ti ti-check"></i></div>
+    </div>
+    <div class="field">
+      <label>Data do gabinete <span class="req">*</span></label>
+      <input type="date" id="data-gabinete" oninput="autoSave();atualizarProgresso()">
+    </div>
+    <div class="field">
+      <label>Pastores realizadores</label>
+      <select id="pastores" onchange="autoSave();atualizarProgresso()">
+        <option value="">Selecionar…</option>
+        <option value="Pastor Helder e Pastora Phamella">Pastor Helder e Pastora Phamella</option>
+        <option value="Pastor Marcos e Missionária Débora">Pastor Marcos e Missionária Débora</option>
+        <option value="Pastor Jonas e Missionária Sandra">Pastor Jonas e Missionária Sandra</option>
+        <option value="Evangelista Josielde e Diaconisa Marilucia (Malu)">Evangelista Josielde e Diaconisa Marilucia (Malu)</option>
+        <option value="Pastor Jubson e Diaconisa Valdegma (Val)">Pastor Jubson e Diaconisa Valdegma (Val)</option>
+        <option value="Evangelista Marcos Antônio e Diaconisa Jaciele">Evangelista Marcos Antônio e Diaconisa Jaciele</option>
+        <option value="Evangelista Lucas e Diaconisa Cyntia">Evangelista Lucas e Diaconisa Cyntia</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CARD 2: FAMÍLIA -->
+  <div class="card" data-section="2">
+    <div class="card-header">
+      <div class="icon-wrap dourado"><i class="ti ti-users"></i></div>
+      <div>
+        <div class="card-title">Família</div>
+        <div class="card-subtitle">Identificação dos membros</div>
+      </div>
+      <span class="card-number">2 / 5</span>
+    </div>
+
+    <div class="field">
+      <label>Estado civil <span class="req">*</span></label>
+      <select id="estado-civil" onchange="onEstadoCivil(this.value);autoSave()">
+        <option value="">Selecionar…</option>
+        <option value="Casado(a)">Casado(a)</option>
+        <option value="Solteiro(a)">Solteiro(a)</option>
+        <option value="Viúvo(a)">Viúvo(a)</option>
+        <option value="Divorciado(a)">Divorciado(a)</option>
+      </select>
+    </div>
+
+    <!-- Campos de nome — exibidos após selecionar estado civil -->
+    <div id="wrap-nomes" style="display:none">
+      <!-- Casados: dois campos empilhados -->
+      <div id="wrap-casal">
+        <div class="field">
+          <label>Nome completo</label>
+          <input type="text" id="nome-esposo" placeholder="Nome completo"
+            oninput="autoSave();marcarPreenchido(this);atualizarProgresso()">
+        </div>
+        <div class="field">
+          <label>Nome do cônjuge</label>
+          <input type="text" id="nome-esposa" placeholder="Nome completo"
+            oninput="autoSave();marcarPreenchido(this)">
+        </div>
+      </div>
+      <!-- Solteiro/Viúvo/Divorciado: campo único -->
+      <div class="field" id="wrap-unico" style="display:none">
+        <label id="label-esposo">Nome completo</label>
+        <input type="text" id="nome-esposo-unico" placeholder="Nome completo"
+          oninput="autoSave();marcarPreenchido(this);atualizarProgresso()">
+      </div>
+      <div class="field-error" id="err-nome" style="margin-top:-8px">
+        <i class="ti ti-alert-circle"></i> Informe pelo menos um nome
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="label-filhos">Filhos</label>
+      <div id="filhos-list"></div>
+      <button class="btn-add" id="btn-add-filho" onclick="addFilho()">
+        <i class="ti ti-plus"></i> Adicionar filho
+      </button>
+    </div>
+
+    <div class="field">
+      <label><i class="ti ti-brand-whatsapp" style="color:#25D366;margin-right:4px"></i>WhatsApp da família</label>
+      <div class="whatsapp-row">
+        <div class="wa-prefix"><i class="ti ti-device-mobile"></i> +55</div>
+        <input type="tel" id="whatsapp" placeholder="(11) 99999-9999"
+          oninput="mascaraWhatsApp(this);autoSave()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Igreja anterior</label>
+      <input type="text" id="igreja-anterior" placeholder="Nome da igreja ou denominação"
+        oninput="autoSave();marcarPreenchido(this)">
+    </div>
+
+    <div class="field">
+      <label><i class="ti ti-camera" style="color:var(--azul);margin-right:4px"></i>Foto da família</label>
+      <div id="foto-upload-area" class="foto-upload-area">
+        <input type="file" accept="image/*" id="foto-input" onchange="handleFoto(this)">
+        <div class="upload-icon"><i class="ti ti-camera"></i></div>
+        <p>Tirar foto ou escolher da galeria</p>
+        <small>JPG, PNG — a foto será incluída no PDF</small>
+      </div>
+      <div id="foto-preview-wrap" class="foto-preview-wrap" style="display:none;margin-top:10px">
+        <img id="foto-preview-img" src="" alt="Foto da família">
+        <button class="foto-remove-btn" onclick="removerFoto()" title="Remover foto"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 3: HISTÓRICO ESPIRITUAL -->
+  <div class="card" data-section="3">
+    <div class="card-header">
+      <div class="icon-wrap oliva"><i class="ti ti-book-2"></i></div>
+      <div>
+        <div class="card-title">Histórico Espiritual</div>
+        <div class="card-subtitle">Situação e experiência na fé</div>
+      </div>
+      <span class="card-number">3 / 5</span>
+    </div>
+
+    <div class="field">
+      <label>É batizado(a)?</label>
+      <select id="batizados" onchange="onSelectSN('batizados',this.value);autoSave()">
+        <option value="">Selecionar…</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+      <div class="alert azul-alert" id="alert-batismo">
+        <i class="ti ti-info-circle"></i>
+        <span>Informar sobre <strong>discipulado</strong> e conectar com irmão <strong>Divino</strong> ou <strong>Guilherme</strong></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Está em comunhão?</label>
+      <select id="comunhao" onchange="onSelectSN('comunhao',this.value);autoSave()">
+        <option value="">Selecionar…</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+      <div class="alert dourado-alert" id="alert-comunhao">
+        <i class="ti ti-alert-triangle"></i>
+        <span>Verificar como <strong>ajudar a reestabelecer a comunhão</strong></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Participava de algum ministério na Igreja Anterior?</label>
+      <input type="text" id="ministerio" placeholder="Ex.: Louvor, EBD, Diaconia…"
+        oninput="autoSave();marcarPreenchido(this)">
+    </div>
+    <div class="field">
+      <label>Título eclesiástico</label>
+      <input type="text" id="titulo" placeholder="Ex.: Diácono, Obreiro…"
+        oninput="autoSave();marcarPreenchido(this)">
+    </div>
+  </div>
+
+  <!-- CARD 4: AÇÕES -->
+  <div class="card" data-section="4">
+    <div class="card-header">
+      <div class="icon-wrap azul"><i class="ti ti-checklist"></i></div>
+      <div>
+        <div class="card-title">Ações de Acompanhamento</div>
+        <div class="card-subtitle">Registre o que foi feito</div>
+      </div>
+      <span class="card-number">4 / 5</span>
+    </div>
+
+    <div class="field">
+      <label><i class="ti ti-brand-whatsapp" style="color:#25D366;margin-right:5px"></i>Incluído no grupo WhatsApp</label>
+      <select id="acao-whatsapp" onchange="state['acao-whatsapp']=this.value;autoSave()">
+        <option value="">Selecionar…</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+        <option value="Pendente">Pendente</option>
+      </select>
+    </div>
+    <div class="field">
+      <label><i class="ti ti-send" style="color:var(--azul);margin-right:5px"></i>Dados enviados à secretaria</label>
+      <select id="acao-secretaria" onchange="state['acao-secretaria']=this.value;autoSave()">
+        <option value="">Selecionar…</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+        <option value="Pendente">Pendente</option>
+      </select>
+    </div>
+    <div class="field">
+      <label><i class="ti ti-user-check" style="color:var(--dourado);margin-right:5px"></i>Apresentado aos Pastores Helder e Phamella</label>
+      <select id="acao-helder" onchange="state['acao-helder']=this.value;autoSave()">
+        <option value="">Selecionar…</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+        <option value="Pendente">Pendente</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CARD 5: OBSERVAÇÕES -->
+  <div class="card" data-section="5">
+    <div class="card-header">
+      <div class="icon-wrap dourado"><i class="ti ti-notes"></i></div>
+      <div>
+        <div class="card-title">Observações</div>
+        <div class="card-subtitle">Anotações livres do pastor</div>
+      </div>
+      <span class="card-number">5 / 5</span>
+    </div>
+    <div class="field">
+      <textarea id="observacoes" placeholder="Ex.: Família em processo de restauração, filhos em idade escolar, pedido de oração por cura. Situações especiais, histórico relevante, próximos passos no acompanhamento…" rows="6" oninput="autoSave()"></textarea>
+    </div>
+  </div>
+
+  <button class="btn-gerar" id="btnGerar" onclick="gerarFicha()">
+    <i class="ti ti-heart-handshake"></i>
+    Concluir e salvar esta família
+  </button>
+
+</div>
+</div>
+
+<!-- ── PREVIEW ── -->
+<div id="preview-area">
+<div class="container">
+  <div class="preview-actions">
+    <button class="btn-download" id="btnDownload" onclick="imprimirPDF()">
+      <i class="ti ti-printer"></i> Salvar / Imprimir PDF
+    </button>
+    <button class="btn-download" id="btnDrive" onclick="enviarDrive()" style="background:var(--azul);box-shadow:var(--shadow-md)">
+      <i class="ti ti-brand-google-drive"></i> Enviar ao Google Drive
+    </button>
+    <button class="btn-novo" onclick="abrirModalNovo()">
+      <i class="ti ti-refresh"></i> Novo gabinete
+    </button>
+  </div>
+
+  <div class="preview-doc" id="preview-doc">
+    <div class="preview-header">
+      <div class="logo-wrap"><img src="logo.png" alt="AD VIVA"></div>
+      <div class="church-sub">Assembleia de Deus Viva</div>
+      <div class="ficha-title">Recepção &amp; Integração Pastoral</div>
+      <div class="familia-nome" id="pv-familia-nome"></div>
+    </div>
+
+    <div class="preview-body">
+      <div class="preview-section">
+        <div class="preview-section-title"><i class="ti ti-calendar-event"></i> Dados do Gabinete</div>
+        <div class="preview-grid">
+          <div class="preview-field"><div class="pf-label">Data</div><div class="pf-value" id="pv-data-gabinete"></div></div>
+          <div class="preview-field"><div class="pf-label">Pastores</div><div class="pf-value" id="pv-pastores"></div></div>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <div class="preview-section-title"><i class="ti ti-users"></i> Família</div>
+        <div class="preview-grid">
+          <div class="preview-field"><div class="pf-label" id="pv-label-esposo">Nome completo</div><div class="pf-value" id="pv-esposo"></div></div>
+          <div class="preview-field" id="pv-wrap-esposa"><div class="pf-label">Cônjuge</div><div class="pf-value" id="pv-esposa"></div></div>
+          <div class="preview-field"><div class="pf-label">Estado civil</div><div class="pf-value" id="pv-estado-civil"></div></div>
+          <div class="preview-field"><div class="pf-label">WhatsApp</div><div class="pf-value" id="pv-whatsapp"></div></div>
+        </div>
+        <div class="preview-field"><div class="pf-label">Igreja anterior</div><div class="pf-value" id="pv-igreja"></div></div>
+        <div class="preview-field" id="pv-filhos-wrap"><div class="pf-label">Filhos</div><div id="pv-filhos"></div></div>
+        <div class="preview-field" id="pv-foto-wrap"><div class="pf-label">Foto da família</div><img id="pv-foto" class="pv-foto" src="" alt="Foto da família"></div>
+      </div>
+
+      <div class="preview-section">
+        <div class="preview-section-title"><i class="ti ti-book-2"></i> Histórico Espiritual</div>
+        <div class="preview-grid">
+          <div class="preview-field"><div class="pf-label">Batizados</div><div class="pf-value" id="pv-batizados"></div></div>
+          <div class="preview-field"><div class="pf-label">Em comunhão</div><div class="pf-value" id="pv-comunhao"></div></div>
+          <div class="preview-field"><div class="pf-label">Ministério anterior</div><div class="pf-value" id="pv-ministerio"></div></div>
+          <div class="preview-field"><div class="pf-label">Título eclesiástico</div><div class="pf-value" id="pv-titulo"></div></div>
+        </div>
+        <div id="pv-alert-batismo-wrap"></div>
+        <div id="pv-alert-comunhao-wrap"></div>
+      </div>
+
+      <div class="preview-section">
+        <div class="preview-section-title"><i class="ti ti-checklist"></i> Ações de Acompanhamento</div>
+        <div id="pv-acoes"></div>
+      </div>
+
+      <div class="preview-section" id="pv-obs-section">
+        <div class="preview-section-title"><i class="ti ti-notes"></i> Observações</div>
+        <div class="obs-preview" id="pv-obs"></div>
+      </div>
+    </div>
+
+    <div class="preview-footer">
+      <div class="footer-brand">AD VIVA — Assembleia de Deus</div>
+      <div class="footer-date" id="pv-footer-date"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── STATE ── //
+let filhos = [];
+let filhoCounter = 0;
+const state = {};
+let fotoDataURL = null;
+let autoSaveTimer = null;
+
+const STORAGE_KEY = 'adviva_gabinete_v1';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby77hNE9-xo8utlNIc0GDNqV2aOPJI6QOk2E6lyHJhq59Fu4CKBNM5O9oSAV2NG2cCi0A/exec';
+
+// ── AUTO-SAVE ── //
+function autoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    const data = {
+      dataGabinete: v('data-gabinete'),
+      pastores: v('pastores'),
+      nomeEsposo: v('nome-esposo'),
+      nomeEsposa: v('nome-esposa'),
+      whatsapp: v('whatsapp'),
+      igrejaAnterior: v('igreja-anterior'),
+      ministerio: v('ministerio'),
+      titulo: v('titulo'),
+      dataVisita: v('data-visita'),
+      observacoes: v('observacoes'),
+      state: {
+        'estado-civil': v('estado-civil'),
+        'batizados': v('batizados'),
+        'comunhao': v('comunhao'),
+        'acao-whatsapp': v('acao-whatsapp'),
+        'acao-secretaria': v('acao-secretaria'),
+        'acao-helder': v('acao-helder'),
+      },
+      pastoresSel: v('pastores') ? [v('pastores')] : [],
+      filhos: filhos.map(f => ({ nome: f.nome, idade: f.idade })),
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      mostrarAutosave();
+    } catch(e) {}
+  }, 800);
+}
+
+function mostrarAutosave() {
+  const badge = document.getElementById('autosaveBadge');
+  badge.classList.add('show');
+  setTimeout(() => badge.classList.remove('show'), 2500);
+}
+
+function restaurarRascunho() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.dataGabinete) set('data-gabinete', data.dataGabinete);
+    if (data.pastores) { set('pastores', data.pastores); marcarPreenchido(document.getElementById('pastores')); }
+    if (data.nomeEsposo) {
+      set('nome-esposo', data.nomeEsposo);
+      set('nome-esposo-unico', data.nomeEsposo);
+      marcarPreenchido(document.getElementById('nome-esposo'));
+      marcarPreenchido(document.getElementById('nome-esposo-unico'));
+    }
+    if (data.nomeEsposa) { set('nome-esposa', data.nomeEsposa); marcarPreenchido(document.getElementById('nome-esposa')); }
+    if (data.whatsapp) set('whatsapp', data.whatsapp);
+    if (data.igrejaAnterior) { set('igreja-anterior', data.igrejaAnterior); marcarPreenchido(document.getElementById('igreja-anterior')); }
+    if (data.ministerio) { set('ministerio', data.ministerio); marcarPreenchido(document.getElementById('ministerio')); }
+    if (data.titulo) { set('titulo', data.titulo); marcarPreenchido(document.getElementById('titulo')); }
+    if (data.dataVisita) set('data-visita', data.dataVisita);
+    if (data.observacoes) set('observacoes', data.observacoes);
+
+    // Restaurar selects
+    if (data.state) {
+      ['estado-civil','batizados','comunhao','acao-whatsapp','acao-secretaria','acao-helder'].forEach(id => {
+        if (data.state[id]) {
+          const el = document.getElementById(id);
+          if (el) { el.value = data.state[id]; state[id] = data.state[id]; }
+        }
+      });
+      if (data.state['estado-civil']) onEstadoCivil(data.state['estado-civil']);
+      if (data.state['batizados']) onSelectSN('batizados', data.state['batizados']);
+      if (data.state['comunhao']) onSelectSN('comunhao', data.state['comunhao']);
+    }
+
+    // Restaurar pastores
+    if (data.pastoresSel && data.pastoresSel.length) {
+      set('pastores', data.pastoresSel[0]);
+    }
+
+    // Restaurar filhos
+    if (data.filhos && data.filhos.length) {
+      filhos = data.filhos.map((f, i) => ({ id: ++filhoCounter, nome: f.nome, idade: f.idade }));
+      renderFilhos();
+    }
+
+    atualizarProgresso();
+  } catch(e) {}
+}
+
+function v(id) { return document.getElementById(id)?.value || ''; }
+function set(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
+
+// ── PROGRESSO ── //
+function atualizarProgresso() {
+  const nomeU  = v('nome-esposo-unico').trim();
+  const esposo = v('nome-esposo').trim();
+  const esposa = v('nome-esposa').trim();
+  const data   = v('data-gabinete');
+
+  const checks = [
+    !!(data && v('pastores')),                        // card 1
+    !!(esposo || esposa || nomeU) && !!v('estado-civil'), // card 2
+    !!(v('batizados') && v('comunhao')),             // card 3
+    !!(v('acao-whatsapp') && v('acao-secretaria') && v('acao-helder')), // card 4
+    true,                                             // card 5 (obs opcional)
+  ];
+
+  const total = checks.filter(Boolean).length;
+
+  // Mostrar barra só após primeira interação
+  const wrap = document.getElementById('progressWrap');
+  if (total > 0) wrap.classList.add('show'); else wrap.classList.remove('show');
+
+  // Atualizar dots
+  checks.forEach((done, i) => {
+    const dot = document.getElementById(`dot-${i+1}`);
+    if (!dot) return;
+    dot.className = 'progress-dot' + (done ? ' done' : (i === total ? ' active' : ''));
+  });
+
+  const labels = ['','Dados do gabinete OK','Família registrada','Histórico espiritual OK','Ações registradas','Tudo pronto!'];
+  document.getElementById('progressLabel').textContent = total < 5 ? `${total} de 5 etapas concluídas` : '✓ Formulário completo';
+
+  // Microanimação nos cards concluídos
+  checks.forEach((done, i) => {
+    const card = document.querySelector(`[data-section="${i+1}"]`);
+    if (!card) return;
+    if (done) card.classList.add('concluido'); else card.classList.remove('concluido');
+  });
+}
+
+// ── MÁSCARA WHATSAPP ── //
+function mascaraWhatsApp(input) {
+  let v = input.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length >= 7) {
+    v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  } else if (v.length >= 3) {
+    v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  } else if (v.length > 0) {
+    v = `(${v}`;
+  }
+  input.value = v;
+}
+
+// ── CAMPO PREENCHIDO ── //
+function marcarPreenchido(input) {
+  if (input.value.trim()) {
+    input.classList.add('filled');
+    input.classList.remove('error');
+  } else {
+    input.classList.remove('filled');
+  }
+}
+
+// ── SELECT SIMPLES (batizados / comunhão) ── //
+function onSelectSN(group, val) {
+  state[group] = val;
+  const alertId = group === 'batizados' ? 'alert-batismo' : 'alert-comunhao';
+  const alertEl = document.getElementById(alertId);
+  if (val === 'Não') {
+    alertEl.style.display = 'flex';
+    requestAnimationFrame(() => alertEl.classList.add('show'));
+  } else {
+    alertEl.classList.remove('show');
+    setTimeout(() => { alertEl.style.display = ''; }, 260);
+  }
+  atualizarProgresso();
+}
+
+// ── ESTADO CIVIL (select) ── //
+function onEstadoCivil(val) {
+  state['estado-civil'] = val;
+  ajustarEstadoCivil(val);
+  atualizarProgresso();
+}
+
+// ── ESTADO CIVIL CONDICIONAL ── //
+function ajustarEstadoCivil(val) {
+  const wrapNomes  = document.getElementById('wrap-nomes');
+  const wrapCasal  = document.getElementById('wrap-casal');
+  const wrapUnico  = document.getElementById('wrap-unico');
+  const labelUnico = document.getElementById('label-esposo');
+
+  // Sempre exibe o bloco de nomes após selecionar estado civil
+  wrapNomes.style.display = '';
+
+  // Atualiza título do card
+  const cardTitle    = document.querySelector('[data-section="2"] .card-title');
+  const cardSubtitle = document.querySelector('[data-section="2"] .card-subtitle');
+  if (val === 'Casado(a)') {
+    cardTitle.textContent    = 'Família';
+    cardSubtitle.textContent = 'Identificação dos membros';
+    wrapCasal.style.display = '';
+    wrapUnico.style.display = 'none';
+    document.getElementById('nome-esposo-unico').value = '';
+    document.getElementById('label-filhos').textContent = 'Filhos';
+    document.getElementById('btn-add-filho').innerHTML = '<i class="ti ti-plus"></i> Adicionar filho';
+  } else if (val) {
+    cardTitle.textContent    = 'Membro';
+    cardSubtitle.textContent = 'Identificação do membro';
+    wrapCasal.style.display = 'none';
+    wrapUnico.style.display = '';
+    document.getElementById('nome-esposo').value = '';
+    document.getElementById('nome-esposa').value = '';
+    labelUnico.textContent = 'Nome completo';
+    document.getElementById('label-filhos').textContent = 'Filho';
+    document.getElementById('btn-add-filho').innerHTML = '<i class="ti ti-plus"></i> Adicionar filho';
+  } else {
+    wrapNomes.style.display = 'none';
+  }
+  autoSave();
+  atualizarProgresso();
+}
+
+// ── PASTORES (select simples) ── //
+const pastoresSelecionados = new Set(); // mantido para compatibilidade com reset
+
+// ── PILL SELECT ── //
+function selectPill(btn) {
+  const group = btn.dataset.group;
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state[group] = btn.dataset.value;
+  autoSave();
+}
+
+function selectPillSN(btn, group) {
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
+    b.classList.remove('selected', 'selected-sim', 'selected-nao');
+  });
+  const val = btn.dataset.value;
+  state[group] = val;
+  btn.classList.add(val === 'Sim' ? 'selected-sim' : 'selected-nao');
+
+  const alertId = group === 'batizados' ? 'alert-batismo' : 'alert-comunhao';
+  const alertEl = document.getElementById(alertId);
+  if (val === 'Não') {
+    alertEl.style.display = 'flex';
+    requestAnimationFrame(() => alertEl.classList.add('show'));
+  } else {
+    alertEl.classList.remove('show');
+    setTimeout(() => { alertEl.style.display = ''; }, 260);
+  }
+  autoSave();
+  atualizarProgresso();
+}
+
+function selectAcao(btn, group) {
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
+    b.classList.remove('selected', 'selected-sim', 'selected-nao', 'selected-pendente');
+  });
+  const val = btn.dataset.value;
+  state[group] = val;
+  if (val === 'Sim') btn.classList.add('selected-sim');
+  else if (val === 'Não') btn.classList.add('selected-nao');
+  else btn.classList.add('selected-pendente');
+  autoSave();
+  atualizarProgresso();
+}
+
+// ── FILHOS ── //
+function addFilho() {
+  const id = ++filhoCounter;
+  filhos.push({ id, nome: '', idade: '' });
+  renderFilhos();
+}
+function removeFilho(id) {
+  filhos = filhos.filter(f => f.id !== id);
+  renderFilhos();
+  autoSave();
+}
+function renderFilhos() {
+  const list = document.getElementById('filhos-list');
+  list.innerHTML = filhos.map(f => `
+    <div class="filho-row" id="filho-${f.id}">
+      <input type="text" placeholder="Nome do filho" value="${esc(f.nome)}"
+        oninput="updateFilho(${f.id},'nome',this.value);autoSave()">
+      <input type="number" placeholder="Idade" value="${esc(f.idade)}" min="0" max="99"
+        oninput="updateFilho(${f.id},'idade',this.value);autoSave()"
+        style="text-align:center">
+      <button class="btn-remove" onclick="removeFilho(${f.id})">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+  `).join('');
+}
+function updateFilho(id, field, val) {
+  const f = filhos.find(x => x.id === id);
+  if (f) f[field] = val;
+}
+
+// ── FOTO ── //
+function handleFoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    fotoDataURL = e.target.result;
+    document.getElementById('foto-preview-img').src = fotoDataURL;
+    document.getElementById('foto-preview-wrap').style.display = 'block';
+    document.getElementById('foto-upload-area').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function removerFoto() {
+  fotoDataURL = null;
+  document.getElementById('foto-input').value = '';
+  document.getElementById('foto-preview-wrap').style.display = 'none';
+  document.getElementById('foto-upload-area').style.display = 'block';
+}
+
+// ── MODAL ── //
+function abrirModalNovo() {
+  document.getElementById('modalConfirm').classList.add('show');
+}
+function fecharModal() {
+  document.getElementById('modalConfirm').classList.remove('show');
+}
+function confirmarNovo() {
+  fecharModal();
+  resetarFormulario();
+}
+
+// ── VALIDAÇÃO ── //
+function validar() {
+  const isCasado = v('estado-civil') === 'Casado(a)';
+  const esposo = isCasado ? v('nome-esposo').trim() : v('nome-esposo-unico').trim();
+  const esposa = isCasado ? v('nome-esposa').trim() : '';
+  const errEl  = document.getElementById('err-nome');
+  const inputRef = document.getElementById(isCasado ? 'nome-esposo' : 'nome-esposo-unico');
+
+  if (!esposo && !esposa) {
+    errEl.classList.add('show');
+    if (inputRef) { inputRef.classList.add('error'); inputRef.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    return false;
+  }
+  errEl.classList.remove('show');
+  if (inputRef) inputRef.classList.remove('error');
+  return true;
+}
+
+// ── HELPERS ── //
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmtDate(val) {
+  if (!val) return '';
+  const [y, m, d] = val.split('-');
+  return `${d}/${m}/${y}`;
+}
+function nomeFamilia(d) {
+  if (d.nomeEsposo && d.nomeEsposa) return `Família ${sobrenome(d.nomeEsposo)}`;
+  if (d.nomeEsposo) return d.nomeEsposo;
+  if (d.nomeEsposa) return d.nomeEsposa;
+  return 'Família';
+}
+function sobrenome(nome) {
+  const parts = nome.trim().split(' ');
+  return parts[parts.length - 1];
+}
+function badge(val) {
+  if (!val) return `<span class="badge neutro">—</span>`;
+  if (val === 'Sim') return `<span class="badge verde"><i class="ti ti-check"></i> Sim</span>`;
+  if (val === 'Não') return `<span class="badge vermelho"><i class="ti ti-x"></i> Não</span>`;
+  return `<span class="badge pendente"><i class="ti ti-clock"></i> Pendente</span>`;
+}
+function pval(val) {
+  return val ? `<span>${escHtml(val)}</span>` : `<span class="empty">—</span>`;
+}
+function collectData() {
+  return {
+    dataGabinete: v('data-gabinete'),
+    pastores: v('pastores'),
+    nomeEsposo: v('estado-civil') === 'Casado(a)' ? v('nome-esposo').trim() : v('nome-esposo-unico').trim(),
+    nomeEsposa: v('estado-civil') === 'Casado(a)' ? v('nome-esposa').trim() : '',
+    estadoCivil: v('estado-civil'),
+    filhos: filhos.map(f => ({ nome: f.nome, idade: f.idade })),
+    whatsapp: v('whatsapp').trim(),
+    igrejaAnterior: v('igreja-anterior').trim(),
+    batizados: v('batizados'),
+    comunhao: v('comunhao'),
+    ministerio: v('ministerio').trim(),
+    titulo: v('titulo').trim(),
+    acaoWhatsapp: v('acao-whatsapp'),
+    acaoSecretaria: v('acao-secretaria'),
+    acaoHelder: v('acao-helder'),
+    acaoPhamella: '',
+    dataVisita: v('data-visita'),
+    observacoes: v('observacoes').trim(),
+  };
+}
+
+// ── GERAR FICHA ── //
+function gerarFicha() {
+  if (!validar()) return;
+
+  const d = collectData();
+  const btn = document.getElementById('btnGerar');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Gerando…';
+
+  try {
+
+  document.getElementById('pv-familia-nome').textContent = nomeFamilia(d);
+  document.getElementById('pv-data-gabinete').innerHTML = pval(fmtDate(d.dataGabinete));
+  document.getElementById('pv-pastores').innerHTML = pval(d.pastores);
+  document.getElementById('pv-esposo').innerHTML = pval(d.nomeEsposo || d.nomeEsposa);
+
+  // Ajusta label/esposa na prévia conforme estado civil
+  const isSolteiro = ['Solteiro(a)','Viúvo(a)','Divorciado(a)'].includes(d.estadoCivil);
+  document.getElementById('pv-label-esposo').textContent = isSolteiro ? 'Nome' : 'Esposo';
+  const pvWrapEsposa = document.getElementById('pv-wrap-esposa');
+  if (isSolteiro) {
+    pvWrapEsposa.style.display = 'none';
+  } else {
+    pvWrapEsposa.style.display = '';
+    document.getElementById('pv-esposa').innerHTML = pval(d.nomeEsposa);
+  }
+
+  document.getElementById('pv-estado-civil').innerHTML = pval(d.estadoCivil);
+  document.getElementById('pv-whatsapp').innerHTML = d.whatsapp ? `<span>+55 ${escHtml(d.whatsapp)}</span>` : `<span class="empty">—</span>`;
+  document.getElementById('pv-igreja').innerHTML = pval(d.igrejaAnterior);
+
+  const pvFilhosWrap = document.getElementById('pv-filhos-wrap');
+  const filhosValidos = d.filhos.filter(f => f.nome);
+  if (filhosValidos.length) {
+    document.getElementById('pv-filhos').innerHTML = filhosValidos.map(f =>
+      `<span class="filho-preview-tag"><i class="ti ti-user-circle" style="font-size:14px"></i>${escHtml(f.nome)}${f.idade ? ` · ${escHtml(f.idade)} anos` : ''}</span>`
+    ).join('');
+    pvFilhosWrap.style.display = '';
+  } else {
+    pvFilhosWrap.style.display = 'none';
+  }
+
+  const pvFotoWrap = document.getElementById('pv-foto-wrap');
+  if (fotoDataURL) {
+    document.getElementById('pv-foto').src = fotoDataURL;
+    pvFotoWrap.style.display = '';
+  } else {
+    pvFotoWrap.style.display = 'none';
+  }
+
+  document.getElementById('pv-batizados').innerHTML = badge(d.batizados);
+  document.getElementById('pv-comunhao').innerHTML = badge(d.comunhao);
+  document.getElementById('pv-ministerio').innerHTML = pval(d.ministerio);
+  document.getElementById('pv-titulo').innerHTML = pval(d.titulo);
+
+  document.getElementById('pv-alert-batismo-wrap').innerHTML = d.batizados === 'Não'
+    ? `<div class="alert-preview azul"><i class="ti ti-info-circle"></i><span>Informar sobre <strong>discipulado</strong> e conectar com irmão <strong>Divino</strong> ou <strong>Guilherme</strong></span></div>` : '';
+  document.getElementById('pv-alert-comunhao-wrap').innerHTML = d.comunhao === 'Não'
+    ? `<div class="alert-preview dourado"><i class="ti ti-alert-triangle"></i><span>Verificar como <strong>ajudar a reestabelecer a comunhão</strong></span></div>` : '';
+
+  const acoes = [
+    { label: 'Incluído no grupo WhatsApp', sub: 'Grupo oficial', val: d.acaoWhatsapp },
+    { label: 'Dados enviados à secretaria', sub: 'Ficha cadastral', val: d.acaoSecretaria },
+    { label: 'Apresentado aos Prs. Helder e Phamella', sub: 'Pastores titulares', val: d.acaoHelder },
+  ];
+  document.getElementById('pv-acoes').innerHTML = acoes.map(a => `
+    <div class="acao-preview-row">
+      <div class="acao-preview-label">${escHtml(a.label)}<br><small style="color:#adb5bd;font-size:11px">${escHtml(a.sub)}</small></div>
+      ${badge(a.val)}
+    </div>`).join('');
+
+  const obsSection = document.getElementById('pv-obs-section');
+  if (d.observacoes) {
+    document.getElementById('pv-obs').textContent = d.observacoes;
+    obsSection.style.display = '';
+  } else {
+    obsSection.style.display = 'none';
+  }
+
+    const now = new Date();
+    document.getElementById('pv-footer-date').textContent =
+      `Gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}`;
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-heart-handshake"></i> Concluir e salvar esta família';
+
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('preview-area').classList.add('show');
+    window.scrollTo(0, 0);
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-heart-handshake"></i> Concluir e salvar esta família';
+    mostrarToast('⚠️ Erro: ' + err.message, 'dourado');
+  }
+}
+
+// ── IMPRIMIR / SALVAR PDF (nativo — instantâneo) ── //
+function imprimirPDF() {
+  window.print();
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ── ENVIAR AO DRIVE (html2pdf — mesmo visual do PDF impresso) ── //
+function enviarDrive() {
+  const d = collectData();
+  const btn = document.getElementById('btnDrive');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader"></i> Gerando PDF…';
+
+  const nomeArq = `ADVIVA_Integracao_${nomeFamilia(d).replace(/\s+/g,'_')}_${(d.dataGabinete || new Date().toISOString().slice(0,10))}`;
+
+  const opt = {
+    margin: [8, 8, 8, 8],
+    image: { type: 'jpeg', quality: 0.85 },
+    html2canvas: { scale: 1, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+  };
+
+  html2pdf()
+    .set(opt)
+    .from(document.getElementById('preview-doc'))
+    .outputPdf('blob')
+    .then(blob => {
+      btn.innerHTML = '<i class="ti ti-loader"></i> Enviando ao Drive…';
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result.split(',')[1];
+        const payload = JSON.stringify({ pdf: base64, filename: `${nomeArq}.pdf` });
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: payload
+        })
+        .then(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ti ti-brand-google-drive"></i> Enviar ao Google Drive';
+          mostrarToast('☁️ PDF salvo no Google Drive!', 'verde');
+          localStorage.removeItem(STORAGE_KEY);
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ti ti-brand-google-drive"></i> Enviar ao Google Drive';
+          mostrarToast('⚠️ Sem conexão. Tente novamente.', 'dourado');
+        });
+      };
+      reader.readAsDataURL(blob);
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-brand-google-drive"></i> Enviar ao Google Drive';
+      mostrarToast('⚠️ Erro ao gerar PDF. Tente novamente.', 'dourado');
+    });
+
+}
+
+// ── RESET ── //
+function resetarFormulario() {
+  document.querySelectorAll('input[type="text"], input[type="date"], input[type="tel"], input[type="number"], textarea')
+    .forEach(el => { el.value = ''; el.classList.remove('filled','error'); });
+  document.querySelectorAll('.pill-btn').forEach(b =>
+    b.classList.remove('selected','selected-sim','selected-nao','selected-pendente'));
+  ['estado-civil','batizados','comunhao','acao-whatsapp','acao-secretaria','acao-helder'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  set('pastores', '');
+  Object.keys(state).forEach(k => delete state[k]);
+  document.getElementById('alert-batismo').classList.remove('show');
+  document.getElementById('alert-comunhao').classList.remove('show');
+  removerFoto();
+  filhos = []; filhoCounter = 0; renderFilhos();
+  document.getElementById('wrap-nomes').style.display = 'none';
+  document.getElementById('wrap-casal').style.display = '';
+  document.getElementById('wrap-unico').style.display = 'none';
+  document.getElementById('err-nome').classList.remove('show');
+  localStorage.removeItem(STORAGE_KEY);
+  atualizarProgresso();
+
+  document.getElementById('preview-area').classList.remove('show');
+  document.getElementById('form-area').style.display = '';
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('data-gabinete').value = today;
+  window.scrollTo(0, 0);
+}
+
+// ── TOAST ── //
+function mostrarToast(msg, tipo) {
+  let toast = document.getElementById('toast-msg');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-msg';
+    toast.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+      padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;
+      z-index:2000;box-shadow:0 4px 16px rgba(0,0,0,0.2);
+      max-width:320px;text-align:center;transition:opacity 0.4s;`;
+    document.body.appendChild(toast);
+  }
+  toast.style.background = tipo === 'verde' ? '#2D9B4A' : '#C07B2A';
+  toast.style.color = '#fff';
+  toast.style.opacity = '1';
+  toast.textContent = msg;
+  setTimeout(() => { toast.style.opacity = '0'; }, 6000);
+}
+
+// ── INIT ── //
+(function init() {
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('data-gabinete').value = today;
+  restaurarRascunho();
+  atualizarProgresso();
+})();
+</script>
+</body>
+</html>
