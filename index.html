@@ -705,7 +705,7 @@
 
     <!-- Batismo: solteiro = 1 campo | casado = 2 campos -->
     <div class="field" id="wrap-batismo-unico">
-      <label>É batizado(a)?</label>
+      <label>É batizado(a)? <span class="req">*</span></label>
       <select id="batizados" onchange="onSelectSN('batizados',this.value);autoSave()">
         <option value="">Selecionar…</option>
         <option value="Sim">Sim</option>
@@ -714,7 +714,7 @@
     </div>
     <div class="row" id="wrap-batismo-casal" style="display:none">
       <div class="field">
-        <label id="lbl-bat-esposo">Esposo — batizado?</label>
+        <label>É batizado(a)? <span class="req">*</span></label>
         <select id="batizados" onchange="onSelectSN('batizados',this.value);autoSave()">
           <option value="">Selecionar…</option>
           <option value="Sim">Sim</option>
@@ -722,7 +722,7 @@
         </select>
       </div>
       <div class="field">
-        <label id="lbl-bat-esposa">Esposa — batizada?</label>
+        <label>Cônjuge — É batizado(a)? <span class="req">*</span></label>
         <select id="batizados-conjuge" onchange="autoSave()">
           <option value="">Selecionar…</option>
           <option value="Sim">Sim</option>
@@ -737,7 +737,7 @@
 
     <!-- Comunhão: solteiro = 1 campo | casado = 2 campos -->
     <div class="field" id="wrap-comunhao-unico" style="margin-top:12px">
-      <label>Está em comunhão?</label>
+      <label>Está em comunhão? <span class="req">*</span></label>
       <select id="comunhao" onchange="onSelectSN('comunhao',this.value);autoSave()">
         <option value="">Selecionar…</option>
         <option value="Sim">Sim</option>
@@ -746,7 +746,7 @@
     </div>
     <div class="row" id="wrap-comunhao-casal" style="display:none;margin-top:12px">
       <div class="field">
-        <label>Esposo — em comunhão?</label>
+        <label>Está em comunhão? <span class="req">*</span></label>
         <select id="comunhao" onchange="onSelectSN('comunhao',this.value);autoSave()">
           <option value="">Selecionar…</option>
           <option value="Sim">Sim</option>
@@ -754,7 +754,7 @@
         </select>
       </div>
       <div class="field">
-        <label>Esposa — em comunhão?</label>
+        <label>Cônjuge — Está em comunhão? <span class="req">*</span></label>
         <select id="comunhao-conjuge" onchange="autoSave()">
           <option value="">Selecionar…</option>
           <option value="Sim">Sim</option>
